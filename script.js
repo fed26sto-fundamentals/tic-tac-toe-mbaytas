@@ -1,16 +1,104 @@
 const Gameboard = (function () {
-  const gameboard = [
-    ["", "", ""],
-    ["", "", ""],
-    ["", "", ""],
-  ];
+  const gameboard = Array(9).fill("");
+
+  function checkWin(mark) {
+    return [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+    ].some((winningCombination) =>
+      winningCombination.every((index) => gameboard[index] === mark)
+    );
+  }
+
+  function checkTie() {
+    return gameboard.every((cell) => cell !== "");
+  }
+
+  function setCell(index, mark) {
+    gameboard[index] = mark;
+  }
+
+  function resetCells() {
+    gameboard.fill("");
+  }
+
+  function render() {
+    console.log(gameboard);
+  }
+
+  return {
+    checkWin,
+    checkTie,
+    setCell,
+    resetCells,
+    render,
+  };
 })();
 
-const createPlayer = (name, mark) => {
-  return { name, mark };
-};
+const GameController = (function () {
+  const players = Array(2);
+  let currentPlayerIdx = 0;
+  let gameOn = false;
 
-const gameController = (function () {
-  const player1 = createPlayer("Player 1", "X");
-  const player2 = createPlayer("Player 2", "O");
+  function createPlayer(name, mark) {
+    return { name, mark };
+  }
+
+  function startGame() {
+    players[0] = createPlayer("Player 1", "X");
+    players[1] = createPlayer("Player 2", "O");
+
+    Gameboard.resetCells();
+    Gameboard.render();
+
+    currentPlayerIdx = 0;
+    gameOn = true;
+
+    playGame();
+  }
+
+  function playRound(player) {
+    const index = prompt(`${player.name}, enter your move (0-8):`);
+    if (index === null) return false;
+
+    Gameboard.setCell(index, player.mark);
+    Gameboard.render();
+
+    return true;
+  }
+
+  function switchPlayer() {
+    currentPlayerIdx = (currentPlayerIdx + 1) % 2;
+  }
+
+  function playGame() {
+    while (gameOn) {
+      const player = players[currentPlayerIdx];
+      gameOn = playRound(player);
+
+      if (Gameboard.checkWin(player.mark)) {
+        console.log(`${player.name} wins!`);
+        gameOn = false;
+        return;
+      }
+
+      if (Gameboard.checkTie()) {
+        console.log("It's a tie!");
+        gameOn = false;
+        return;
+      }
+
+      switchPlayer();
+    }
+  }
+
+  return {
+    startGame,
+  };
 })();
