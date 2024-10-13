@@ -78,19 +78,23 @@ const GameController = (function () {
   }
 
   function playGame() {
-    while (gameOn) {
+    while (true) {
       const player = players[currentPlayerIdx];
-      gameOn = playRound(player);
+      
+      const round = playRound(player);
+
+      if (!round) {
+        console.log("Game terminated!");
+        return;
+      }
 
       if (Gameboard.checkWin(player.mark)) {
         console.log(`${player.name} wins!`);
-        gameOn = false;
         return;
       }
 
       if (Gameboard.checkTie()) {
         console.log("It's a tie!");
-        gameOn = false;
         return;
       }
 
