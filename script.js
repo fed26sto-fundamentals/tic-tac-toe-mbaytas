@@ -50,7 +50,7 @@ const GameController = (function () {
     return { name, mark };
   }
 
-  function startGame() {
+  function setupGame() {
     players[0] = createPlayer("Player 1", "X");
     players[1] = createPlayer("Player 2", "O");
 
@@ -59,8 +59,6 @@ const GameController = (function () {
 
     currentPlayerIdx = 0;
     gameOn = true;
-
-    playGame();
   }
 
   function playRound(player) {
@@ -78,9 +76,11 @@ const GameController = (function () {
   }
 
   function playGame() {
+    setupGame();
+
     while (true) {
       const player = players[currentPlayerIdx];
-      
+
       const round = playRound(player);
 
       if (!round) {
@@ -103,6 +103,6 @@ const GameController = (function () {
   }
 
   return {
-    startGame,
+    playGame,
   };
 })();
